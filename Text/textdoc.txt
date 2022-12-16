@@ -1,0 +1,43 @@
+cuvinte:
+fara semne
+lower
+lematizam
+scoatem cuvinte de legatura / sau patstram / tinem humai cuvintele de legatura
+dictionar de cuvinte => top cele mai frecvente cuvinte
+luam cele mai comune cuvinte
+
+
+
+
+-> nu e pe memorare si asemanari ca naive base
+-> nu e precum knn
+-> important ce e C = penalitate c-> mai mic nu ne pasa de model, sa separe
+c ++ -> model mai bun (poate sa dea overfitting), timp foarte mare de rulare
+
+
+svm liniar => nu prea merge
+svm svc si kernel => 
+kernel: impartire a datelor, 
+::::asta  e cel mai importanet poly nu merge
+::::rbf merge ca lumea 
+:::: precomputed merge destul de bine in teorie
+-> gama de incercat: scale sau auto rbf, poly, sigmoid si nu stiu care
+
+
+-> sa stim cum arata kernel
+for c in [0.01, 0.1, 1, 10, 100, 1000]:
+    model = svm.LinearSVC(C=c)
+    model.fit(train_images, train_labels)
+    predicted_labels = model.permis   SVM pe tipurile astea
+
+
+
+
+----------------------------------------------------------------------
+transfer learning -> nu plecam cu invatatul de la 0, se preiau niste chestii 
+invatate anterior
+
+
+-----------------------------------------------------------------------
+svm c=10 => 0.60
+
