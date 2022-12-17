@@ -1,5 +1,8 @@
 from zipfile import ZipFile
 import os
+import googletrans
+from googletrans import Translator
+
 
 
 def unzip(file):
@@ -20,14 +23,18 @@ def readText(path):
 
     # print(data)
     # print(len(data))
+    return data
 
+def traducere(file):
+    return
 
 
 
 
 if __name__ == '__main__':
-    file='file.zip'
+    file='text2.zip'
     unzip(file)
     os.getcwd()
     database = os.path.join(os.getcwd(), 'Text')
-    readText(database)
+    texts = readText(database)
+    print(texts)
