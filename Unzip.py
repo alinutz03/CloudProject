@@ -35,11 +35,10 @@ def translate(path, languageInput, languageOutput):
                     print(translated)
                     f.write("\n")
 
-    shutil.make_archive( 'outputFile', 'zip', 'Text')
 
-    # print(data)
-    # print(len(data))
-    return data
+def zip(outputName, file):
+    shutil.make_archive( outputName, 'zip', file)
+
 
 
 
@@ -54,6 +53,9 @@ if __name__ == '__main__':
     database = os.path.join(os.getcwd())
     languageInput = input("Please introduce the language of the source: \n")
     languageOutput = input("Plase introduce the language to translate: \n")
-    texts = translate(database, languageInput, languageOutput)
+    translate(database, languageInput, languageOutput)
+    outputName ='outputFiles'
+    file = 'Text'
+    zip(outputName, file)
     # print(texts)
     # traducere(languageInput, languageOutput)
