@@ -5,8 +5,6 @@ from deep_translator import GoogleTranslator
 from googletrans import Translator
 import shutil
 
-
-
 def unzip(file):
     with ZipFile (file, 'r') as zipObj:
         zipObj.extractall('Text')
@@ -40,9 +38,8 @@ def zip(outputName, file):
     shutil.make_archive( outputName, 'zip', file)
 
 
-
-
-
+def translateFile(path, languageInput, languageOutput):
+    translated = GoogleTranslator(source=languageInput, target=languageOutput).translate_file(path)
 
 
 if __name__ == '__main__':
