@@ -18,7 +18,6 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 
 @login_manager.user_loader
-@login_manager.user_loader
 def load_user(user_id):
     users = db.db.user
     user_json = users.find_one({'_id': ObjectId(user_id)})
@@ -81,6 +80,12 @@ def login():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
