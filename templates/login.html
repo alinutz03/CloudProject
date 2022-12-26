@@ -7,15 +7,53 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Login</title>
 </head>
+
+<style>
+    body{
+        position: center;
+        text-align:  center;
+    }
+   .log {
+  color: rgb(104, 85, 224);
+  background-color: rgba(255, 255, 255, 1);
+  border: 1px solid rgba(104, 85, 224, 1);
+}
+
+button:hover {
+  color: white;
+  width:;
+  box-shadow: 0 0 20px rgba(104, 85, 224, 0.6);
+  background-color: rgba(104, 85, 224, 1);
+}
+
+</style>
 <body>
     <h1>Login Page</h1>
 
-    <form method="post" action="">
+    <form method="post" action="{{url_for('login')}}">
         {{ form.hidden_tag() }}
-        {{ form.username }}
-        {{ form.password }}
+        <br>
+        <label for="username">Username</label>
+        <br>
+        <input type = "text"  name="username"
+               placeholder="Username">
+<!--               value="{{ request.form['username'] }}">-->
+
+
+        <br>
+          <label for="password">Password</label>
+        <br>
+        <input type="text" name="password"
+        placeholder="Password">
+<!--        value = "{{request.form['password']}}">-->
+        <br>
+        <button type="submit" class="log">Login</button>
+        <br>
         {{ form.submit }}
+
+        <br>
     </form>
+    </div>
 
     <a href="{{url_for('register')}}">Don't have an account? Sign up</a>
 </body>
