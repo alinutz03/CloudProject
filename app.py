@@ -1,5 +1,6 @@
+import flask_login
 from bson import ObjectId
-from flask import Flask, render_template, url_for, redirect
+from flask import Flask, render_template, url_for, redirect, request, session
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 import db
 from flask_wtf import FlaskForm
@@ -7,11 +8,15 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
 import PySimpleGUI as sg
+from flask_pymongo import PyMongo
+from io import BytesIO
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'thisisasecretkey'
+app.config['MONGO_URI'] = "mongodb+srv://nmarius19:0Rn6xC7KIUKXGkoD@cluster0.rtopvft.mongodb.net/?retryWrites=true&w=majority"
 bcrypt = Bcrypt(app)
+mongo = PyMongo(app)
 
 login_manager=LoginManager()
 login_manager.init_app(app)
@@ -70,6 +75,7 @@ def login():
             if bcrypt.check_password_hash(user['password'], form.password.data):
                 loginuser = User(user)
                 login_user(loginuser)
+                session['username'] = user['username']
                 return redirect(url_for('dashboard'))
             else:
                 sg.Popup('Oops', 'Wrong password! Try again!')
@@ -93,15 +99,24 @@ def register():
 
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)
-        existing_user_name = User(getUser(form.username.data))
+        existing_user_name = getUser(form.username.data)
         if existing_user_name:
             sg.Popup('Username already exists!')
-
         else:
             db.db.user.insert_one({'username': form.username.data, 'password': hashed_password})
             return redirect(url_for('login'))
 
     return render_template('register.html', form=form)
+
+@app.route('/create',  methods=['GET', 'POST'])
+@login_required
+def create():
+    if 'zip' in request.files:
+        zip_file = request.files['zip']
+        zip_binary = bytes(zip_file.getvalue())
+        zip_collection = db.db['zipuri']
+        zip_collection.insert_one({'username' : session.get('username'), zip_file.filename : zip_binary})
+    return redirect(url_for('dashboard'))
 
 
 if __name__ == '__main__':

@@ -9,6 +9,10 @@
 </head>
 <body>
     <h1>Hello you are logged in.</h1>
+    <form method="post" action="/create" enctype="multipart/form-data">
+        <input type="file" name="zip">
+        <input type="submit">
+    </form>
     <a href="{{url_for('logout')}}">Press here to logout</a>
 </body>
 </html>
