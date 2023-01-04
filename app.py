@@ -1,4 +1,5 @@
-import io
+import os
+import shutil
 
 from bson import ObjectId
 from flask import Flask, render_template, url_for, redirect, request, session, make_response
@@ -90,16 +91,16 @@ def dashboard():
     zipuri = zipuri_collection.find({'username' : session.get('username')})
     zipuri_list = []
     for zip in zipuri:
-        zipuri_list.append({'zip_name' : zip['zip_name']})
+        zipuri_list.append({'_id' : zip['_id'] ,'zip_name' : zip['zip_name']})
 
     return render_template('dashboard.html', zipuri = zipuri_list)
 
-@app.route('/download/<zip_name>')
+@app.route('/download/<zip_name>/<_id>')
 @login_required
-def download_zip(zip_name):
+def download_zip(zip_name, _id):
     zipuri_collection = db.db.zipuri
-    zipuri = zipuri_collection.find_one({'zip_name': zip_name, 'username': session.get('username')})
-
+    _id = ObjectId(_id)
+    zipuri = zipuri_collection.find_one({'_id' : _id ,'username': session.get('username')})
     if zipuri:
         # Read the file from MongoDB
         file_data = zipuri['zip_file']
@@ -138,9 +139,33 @@ def register():
 def create():
     if 'zip' in request.files:
         zip_file = request.files['zip']
-        zip_binary = bytes(zip_file.getvalue())
+        unzip_file_name = zip_file.filename.rsplit('.', maxsplit=1)[0]
+        Unzip.unzip(zip_file, unzip_file_name)
+        os.getcwd()
+        local_path = os.path.join(os.getcwd()) + '/' + unzip_file_name
+        languageInput = request.form['languageInput']
+        languageOutput = request.form['languageOutput']
+        Unzip.translate(local_path, languageInput, languageOutput,unzip_file_name)
+        Unzip.zip(unzip_file_name, unzip_file_name)
+        #zip_binary = bytes(zip_file.getvalue())
+        zip_file_name = unzip_file_name + '.zip'
+        with open(zip_file_name, 'rb') as f:
+            # Read the contents of the file into a byte string
+            zip_binary = f.read()
+        #zip_binary = bytes(zip_file_name.getvalue())
         zip_collection = db.db['zipuri']
         zip_collection.insert_one({'username' : session.get('username'), 'zip_name':  zip_file.filename, 'zip_file' : zip_binary})
+        try:
+            # Delete the unzip_file_name directory
+            shutil.rmtree(unzip_file_name)
+        except FileNotFoundError:
+            pass
+
+        try:
+            # Delete the zip_file_name file
+            os.remove(zip_file_name)
+        except FileNotFoundError:
+            pass
     return redirect(url_for('dashboard'))
 
 

@@ -11,10 +11,12 @@
     <h1>Hello you are logged in.</h1>
     <ul>
         {% for zip in zipuri %}
-        <li> Zip name : {{zip.zip_name}} <a href="/download/{{ zip.zip_name }}" download> Press to download: {{ zip.zip_name }}</a></li>
+        <li> Zip name : {{zip.zip_name}}<a href="/download/{{zip.zip_name}}/{{ zip._id }}" download> Press to download: {{ zip.zip_name }}</a></li>
         {% endfor %}
     </ul>
     <form method="post" action="/create" enctype="multipart/form-data">
+        <input type="text" name="languageInput" required placeholder="language input">
+        <input type="text" name="languageOutput" required placeholder="language output">
         <input type="file" name="zip">
         <input type="submit">
     </form>

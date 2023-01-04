@@ -5,29 +5,27 @@ from deep_translator import GoogleTranslator
 from googletrans import Translator
 import shutil
 
-def unzip(file):
+def unzip(file, unzip_file_name):
     with ZipFile (file, 'r') as zipObj:
-        zipObj.extractall('Text')
+        zipObj.extractall(unzip_file_name)
         #print ('File is unzipped in Text folder')
 
 
-def translate(path, languageInput, languageOutput):
+def translate(path, languageInput, languageOutput, unzip_file_name):
     data =[]
-    print()
-    print(path)
-    print()
+    #print()
+    #print(path)
+    #print()
     # print(len(list(os.walk(database))[0]))
-    database= os.path.join(path, 'Text')
+    database = os.path.join(path)
+    print(database)
     for root, folders, files in os.walk(database):
         for file in files:
-            print(file)
             path = os.path.join(root, file)
-            with open(path) as inf:
-                print(path)
+            with open(path, 'r', encoding='utf-8', errors='ignore') as inf:
                 text = inf.read()
-                translator = Translator()
             translated = GoogleTranslator(source=languageInput , target=languageOutput).translate_file(path)
-            print(translated)
+            #print(translated)
             with open(path, 'w') as f:
                     f.write(translated)
                     print(translated)
