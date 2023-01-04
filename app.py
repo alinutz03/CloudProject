@@ -1,15 +1,16 @@
-import flask_login
+import io
+
 from bson import ObjectId
-from flask import Flask, render_template, url_for, redirect, request, session
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask import Flask, render_template, url_for, redirect, request, session, make_response
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user
 import db
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, ValidationError
+from wtforms.validators import InputRequired, Length
 from flask_bcrypt import Bcrypt
 import PySimpleGUI as sg
 from flask_pymongo import PyMongo
-from io import BytesIO
+import Unzip
 
 app = Flask(__name__)
 
@@ -85,7 +86,31 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    zipuri_collection = db.db.zipuri
+    zipuri = zipuri_collection.find({'username' : session.get('username')})
+    zipuri_list = []
+    for zip in zipuri:
+        zipuri_list.append({'zip_name' : zip['zip_name']})
+
+    return render_template('dashboard.html', zipuri = zipuri_list)
+
+@app.route('/download/<zip_name>')
+@login_required
+def download_zip(zip_name):
+    zipuri_collection = db.db.zipuri
+    zipuri = zipuri_collection.find_one({'zip_name': zip_name, 'username': session.get('username')})
+
+    if zipuri:
+        # Read the file from MongoDB
+        file_data = zipuri['zip_file']
+        # Create a response object with the file data and the appropriate headers
+        response = make_response(file_data)
+        response.headers['Content-Type'] = 'application/zip'
+        response.headers['Content-Disposition'] = 'attachment; filename={}'.format(zip_name)
+        return response
+    else:
+        # Return a 404 error if the file is not found
+        return 'Bad request'
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
@@ -115,7 +140,7 @@ def create():
         zip_file = request.files['zip']
         zip_binary = bytes(zip_file.getvalue())
         zip_collection = db.db['zipuri']
-        zip_collection.insert_one({'username' : session.get('username'), zip_file.filename : zip_binary})
+        zip_collection.insert_one({'username' : session.get('username'), 'zip_name':  zip_file.filename, 'zip_file' : zip_binary})
     return redirect(url_for('dashboard'))
 
 
