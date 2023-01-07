@@ -7,11 +7,13 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
 import PySimpleGUI as sg
+from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'thisisasecretkey'
 bcrypt = Bcrypt(app)
+Bootstrap(app)
 
 login_manager=LoginManager()
 login_manager.init_app(app)
